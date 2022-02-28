@@ -33,6 +33,8 @@ const data1 = [
   { name: "G", score: 18 },
 ];
 
+let data2 = d3.csv("/data/barchart.csv");
+
 /*
 
   Axes
@@ -40,7 +42,7 @@ const data1 = [
 */
 
 // finds the max score from the data
-let maxY1 = d3.max(data1, function (d) {
+let maxY1 = d3.max(data2, function (d) {
   return d.score;
 });
 
@@ -68,7 +70,7 @@ svg1
 svg1
   .append("g")
   .attr("transform", `translate(0,${height - margin.bottom})`)
-  .call(d3.axisBottom(xScale1).tickFormat((i) => data1[i].name))
+  .call(d3.axisBottom(xScale1).tickFormat((i) => data2[i].name))
   .attr("font-size", "20px");
 
 /* 
@@ -113,7 +115,7 @@ const mouseleave1 = function (event, d) {
 // select anything with class bar(empty selection), finds data,
 svg1
   .selectAll(".bar")
-  .data(data1)
+  .data(data2)
   .enter() // placeholder
   .append("rect") // apprends for each row in data1
   .attr("class", "bar") // add attribute class bar
