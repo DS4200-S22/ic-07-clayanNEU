@@ -22,6 +22,14 @@ const svg1 = d3
   .attr("height", height - margin.top - margin.bottom)
   .attr("viewBox", [0, 0, width, height]);
 
+// selects csv-bar div and adds new d3 svg
+const svg2 = d3
+  .select("#csv-bar")
+  .append("svg")
+  .attr("width", width - margin.left - margin.right)
+  .attr("height", height - margin.top - margin.bottom)
+  .attr("viewBox", [0, 0, width, height]);
+
 // Hardcoded barchart data
 const data1 = [
   { name: "A", score: 92 },
@@ -33,7 +41,9 @@ const data1 = [
   { name: "G", score: 18 },
 ];
 
-let data2 = d3.csv("/data/barchart.csv");
+let data2 = d3.csv("/data/barchart.csv", function (data2) {
+  console.log(data2);
+});
 
 /*
 
@@ -42,7 +52,7 @@ let data2 = d3.csv("/data/barchart.csv");
 */
 
 // finds the max score from the data
-let maxY1 = d3.max(data2, function (d) {
+let maxY1 = d3.max(data1, function (d) {
   return d.score;
 });
 
@@ -70,7 +80,7 @@ svg1
 svg1
   .append("g")
   .attr("transform", `translate(0,${height - margin.bottom})`)
-  .call(d3.axisBottom(xScale1).tickFormat((i) => data2[i].name))
+  .call(d3.axisBottom(xScale1).tickFormat((i) => data1[i].name))
   .attr("font-size", "20px");
 
 /* 
@@ -114,6 +124,20 @@ const mouseleave1 = function (event, d) {
 
 // select anything with class bar(empty selection), finds data,
 svg1
+  .selectAll(".bar")
+  .data(data1)
+  .enter() // placeholder
+  .append("rect") // apprends for each row in data1
+  .attr("class", "bar") // add attribute class bar
+  .attr("x", (d, i) => xScale1(i)) //setting x pos for rectangles
+  .attr("y", (d) => yScale1(d.score)) // setting y pos for rect, mapping score val to pixel val
+  .attr("height", (d) => height - margin.bottom - yScale1(d.score)) // set height and width
+  .attr("width", xScale1.bandwidth()) // do math for thickness of bars
+  .on("mouseover", mouseover1) // add event lis to bar and link it to
+  .on("mousemove", mousemove1)
+  .on("mouseleave", mouseleave1);
+
+svg2
   .selectAll(".bar")
   .data(data2)
   .enter() // placeholder
